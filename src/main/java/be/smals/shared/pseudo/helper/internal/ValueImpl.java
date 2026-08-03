@@ -1,6 +1,7 @@
 package be.smals.shared.pseudo.helper.internal;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import be.smals.shared.pseudo.helper.Domain;
 import be.smals.shared.pseudo.helper.Value;
@@ -47,6 +48,9 @@ public final class ValueImpl extends PseudonymImpl implements Value {
   public CompletableFuture<PseudonymInTransitImpl> pseudonymize() {
     final var random = domain.createRandom();
     final var blindedValue = multiply(random);
+    if (domain.isPseudoUnaware()) {
+      return completedFuture(inTransit());
+    }
     final var payload = domain.createPayloadString(blindedValue);
     final var pseudonymInTransitFactory = domain.pseudonymInTransitFactory();
     return domain.pseudonymisationClient().pseudonymize(domain.key(), payload)

@@ -67,6 +67,8 @@ public interface PseudonymInTransit extends Point {
 
   /**
    * Identify (de-pseudonymise) this {@link PseudonymInTransit}.
+   * <p>
+   * For pseudo-unaware domains, the identification is done locally (no calls to eHealth Pseudonymization service are done).
    *
    * @return the identified {@link Pseudonym} as a {@link Value}.
    */

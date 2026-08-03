@@ -144,7 +144,7 @@ To add the Pseudonymisation Helper library in your project, you can add this Mav
 <dependency>
   <groupId>be.smals.shared.pseudo</groupId>
   <artifactId>pseudo-helper</artifactId>
-  <version>1.0.0</version>
+  <version>1.2.2</version>
 </dependency>
 ----
 
@@ -644,16 +644,9 @@ A Value object represents a clear identifier, this object allows to pseudonymize
   String asString();
 
   /**
-   * Returns this {@link Value} as a {@link Pseudonym}.
-   * <p>
-   * Should not be used in regular usage, but it can be convenient for testing/logging purpose.
-   *
-   * @return this {@link Value} as a {@link Pseudonym}.
-   */
-  Pseudonym asPseudonym();
-
-  /**
    * Pseudonymize this {@link Value}.
+ * <p>
+ * For pseudo-unaware domains, the pseudonym in transit is generated locally (no calls to eHealth Pseudonymization service are done).
    *
    * @return a random {@link PseudonymInTransit} for this {@link Value}.
    */
@@ -667,6 +660,13 @@ A Pseudonym object represents a point X and Y in a curve.
 .Methods
 [source,java,indent=0]
 ----
+  /**
+   * Get the domain that owns this point.
+   *
+   * @return the domain that owns this point
+   */
+  Domain domain();
+
   /**
    * Returns binary representation of the X coordinate (as a byte array converted in a Base64 String).
    *
@@ -686,14 +686,14 @@ A Pseudonym object represents a point X and Y in a curve.
    *
    * @return Base64 URL encoded the uncompressed SEC1 Elliptic-Curve-Point-to-Octet-String Conversion of this point
    */
-  String sec1();
+   String asString();
 
   /**
    * Compressed SEC 1 representation of this point.
    *
    * @return compressed SEC 1 representation of this point
    */
-  String sec1Compressed();
+  String asShortString();
 
   /**
    * Convert this {@link Pseudonym} into a {@link PseudonymInTransit} for the given domain.
@@ -789,7 +789,14 @@ A PseudonymInTransit object represents a pseudonymInTransit that contains a Pseu
 [source,java,indent=0]
 ----
   /**
-   * Returns the {@link TransitInfo}.
+   * Returns the {@link Pseudonym} of this {@link PseudonymInTransit}.
+   *
+   * @return the {@link Pseudonym} of this {@link PseudonymInTransit}
+   */
+  Pseudonym pseudonym();
+
+/**
+ * Returns the {@link TransitInfo} of this {@link PseudonymInTransit}.
    *
    * @return the {@link TransitInfo}
    */
@@ -823,6 +830,8 @@ A PseudonymInTransit object represents a pseudonymInTransit that contains a Pseu
 
   /**
    * Identify (de-pseudonymise) this {@link PseudonymInTransit}.
+   * <p>
+   * For pseudo-unaware domains, the identification is done locally (no calls to eHealth Pseudonymization service are done).
    *
    * @return the identified {@link Pseudonym} as a {@link Value}.
    */

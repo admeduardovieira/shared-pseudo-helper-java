@@ -34,6 +34,36 @@ public class DomainImpl implements Domain {
   private final PseudonymFactoryImpl pseudonymFactory;
   private final PseudonymInTransitFactoryImpl pseudonymInTransitFactory;
   private final SecureRandom secureRandom;
+  private final boolean isPseudoUnaware;
+
+  public DomainImpl(final String key,
+                    final String crv,
+                    final ECCurve curve,
+                    final String audience,
+                    final int bufferSize,
+                    final Map<String, SecretKey> secretKeys,
+                    final String activeKid,
+                    final EncryptionMethod activeKeyEncryptionMethod,
+                    final Duration inTransitTtl,
+                    final PseudonymisationClient pseudonymisationClient,
+                    final boolean isPseudoUnaware,
+                    final SecureRandom secureRandom) {
+    this.key = key;
+    this.crv = crv;
+    this.curve = curve;
+    this.audience = audience;
+    this.bufferSize = bufferSize;
+    this.secretKeys = secretKeys;
+    this.activeKid = activeKid;
+    this.activeKeyEncryptionMethod = activeKeyEncryptionMethod;
+    this.inTransitTtl = inTransitTtl;
+    this.pseudonymisationClient = pseudonymisationClient;
+    this.isPseudoUnaware = isPseudoUnaware;
+    this.valueFactory = new ValueFactoryImpl(this);
+    this.pseudonymFactory = new PseudonymFactoryImpl(this);
+    this.pseudonymInTransitFactory = new PseudonymInTransitFactoryImpl(this);
+    this.secureRandom = secureRandom;
+  }
 
   public DomainImpl(final String key,
                     final String crv,
@@ -46,20 +76,7 @@ public class DomainImpl implements Domain {
                     final Duration inTransitTtl,
                     final PseudonymisationClient pseudonymisationClient,
                     final SecureRandom secureRandom) {
-    this.key = key;
-    this.crv = crv;
-    this.curve = curve;
-    this.audience = audience;
-    this.bufferSize = bufferSize;
-    this.secretKeys = secretKeys;
-    this.activeKid = activeKid;
-    this.activeKeyEncryptionMethod = activeKeyEncryptionMethod;
-    this.inTransitTtl = inTransitTtl;
-    this.pseudonymisationClient = pseudonymisationClient;
-    this.valueFactory = new ValueFactoryImpl(this);
-    this.pseudonymFactory = new PseudonymFactoryImpl(this);
-    this.pseudonymInTransitFactory = new PseudonymInTransitFactoryImpl(this);
-    this.secureRandom = secureRandom;
+    this(key, crv, curve, audience, bufferSize, secretKeys, activeKid, activeKeyEncryptionMethod, inTransitTtl, pseudonymisationClient, false, secureRandom);
   }
 
   @Override
@@ -103,6 +120,15 @@ public class DomainImpl implements Domain {
 
   PseudonymisationClient pseudonymisationClient() {
     return pseudonymisationClient;
+  }
+
+  /**
+   * Indicate if the domain is a regular domain or a pseudo-unaware domain (a domain without scalar).
+   *
+   * @return {@code true} if the domain is a pseudo-unaware domain, {@code false} otherwise.
+   */
+  public boolean isPseudoUnaware() {
+    return isPseudoUnaware;
   }
 
   String createPayloadString(final Pseudonym pseudonym) {

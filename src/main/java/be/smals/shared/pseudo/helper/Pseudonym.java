@@ -17,29 +17,11 @@ public interface Pseudonym extends Point {
   String asString();
 
   /**
-   * Calls {@link #asString()}.
-   *
-   * @return String returned by {@link #asString()}
-   * @deprecated Please use {@link #asString()} instead.
-   */
-  @Deprecated(forRemoval = true)
-  String sec1();
-
-  /**
    * Compressed SEC 1 representation of this point.
    *
    * @return compressed SEC 1 representation of this point
    */
   String asShortString();
-
-  /**
-   * Calls {@link #asShortString()}.
-   *
-   * @return String returned by {@link #asShortString()}
-   * @deprecated Please use {@link #asShortString()} instead.
-   */
-  @Deprecated(forRemoval = true)
-  String sec1Compressed();
 
   /**
    * Convert this {@link Pseudonym} into a {@link PseudonymInTransit} for the given domain.
@@ -74,4 +56,22 @@ public interface Pseudonym extends Point {
    */
   PseudonymInTransit inTransit(final TransitInfoCustomizer transitInfoCustomizer);
   // end::methods[]
+
+  /**
+   * Calls {@link #asString()}.
+   *
+   * @return String returned by {@link #asString()}
+   * @deprecated Please use {@link #asString()} instead.
+   */
+  @Deprecated(forRemoval = true)
+  String sec1();
+
+  /**
+   * Calls {@link #asShortString()}.
+   *
+   * @return String returned by {@link #asShortString()}
+   * @deprecated Please use {@link #asShortString()} instead.
+   */
+  @Deprecated(forRemoval = true)
+  String sec1Compressed();
 }

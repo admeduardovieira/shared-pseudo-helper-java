@@ -58,6 +58,7 @@ public final class PseudonymisationHelper {
   private final Supplier<CompletableFuture<String>> jwksSupplier;
   private final PseudonymisationClient pseudonymisationClient;
   private final PrivateKeySupplier privateKeySupplier;
+  private final Set<String> pseudoUnawareDomains;
   private final SecureRandom secureRandom;
   private final ConcurrentHashMap<String, CompletableFuture<DomainImpl>> domains;
   private final ConcurrentHashMap<String, CompletableFuture<DomainImpl>> previousDomains;
@@ -81,11 +82,13 @@ public final class PseudonymisationHelper {
   private PseudonymisationHelper(final URI jwksUrl,
                                  final Supplier<CompletableFuture<String>> jwksSupplier,
                                  final PseudonymisationClient pseudonymisationClient,
-                                 final PrivateKeySupplier privateKeySupplier) {
+                                 final PrivateKeySupplier privateKeySupplier,
+                                 final Set<String> pseudoUnawareDomains) {
     this.jwksUrl = jwksUrl;
     this.jwksSupplier = jwksSupplier;
     this.pseudonymisationClient = pseudonymisationClient;
     this.privateKeySupplier = privateKeySupplier;
+    this.pseudoUnawareDomains = pseudoUnawareDomains == null ? Set.of() : Set.copyOf(pseudoUnawareDomains);
     refreshableDomains = synchronizedSet(new HashSet<>(4, 1f));
     unmodifiableCopyOfRefreshableDomains = Set.of();
     secureRandom = CryptoServicesRegistrar.getSecureRandom();
@@ -236,6 +239,7 @@ public final class PseudonymisationHelper {
                                         activeKeyAlgorithm,
                                         Duration.parse((String) parsedEHealthDomain.get("timeToLiveInTransit")),
                                         pseudonymisationClient,
+                                        pseudoUnawareDomains.contains(domainKey) && activeKid != null,
                                         secureRandom);
       if (isKnownJku) {
         if (refreshableDomains.add(domainKey)) {
@@ -357,6 +361,7 @@ public final class PseudonymisationHelper {
     private Supplier<CompletableFuture<String>> jwksSupplier;
     private PrivateKeySupplier privateKeySupplier;
     private PseudonymisationClient pseudonymisationClient;
+    private Set<String> pseudoUnawareDomains;
 
     private Builder() {
     }
@@ -407,12 +412,37 @@ public final class PseudonymisationHelper {
     }
 
     /**
+     * Set {@code pseudoUnawareDomains}.
+     *
+     * @param pseudoUnawareDomains The set of domains that are unaware of pseudonymisation (add your domain here if the pseudonym at rest is the value itself).
+     * @return {@code this}
+     */
+    public Builder pseudoUnawareDomains(final Set<String> pseudoUnawareDomains) {
+      this.pseudoUnawareDomains = pseudoUnawareDomains;
+      return this;
+    }
+
+    /**
+     * Add a domain that is unaware of pseudonymisation (if the pseudonym at rest is the value itself).
+     *
+     * @param pseudoUnawareDomain The domain to add to the set of pseudo-unaware domains.
+     * @return {@code this}
+     */
+    public Builder addPseudoUnawareDomains(final String pseudoUnawareDomain) {
+      if (pseudoUnawareDomains == null) {
+        pseudoUnawareDomains = new HashSet<>(3);
+      }
+      pseudoUnawareDomains.add(pseudoUnawareDomain);
+      return this;
+    }
+
+    /**
      * Build the {@link PseudonymisationHelper}.
      *
      * @return a new {@link PseudonymisationHelper}.
      */
     public PseudonymisationHelper build() {
-      return new PseudonymisationHelper(jwksUrl, jwksSupplier, pseudonymisationClient, privateKeySupplier);
+      return new PseudonymisationHelper(jwksUrl, jwksSupplier, pseudonymisationClient, privateKeySupplier, pseudoUnawareDomains);
     }
   }
 }

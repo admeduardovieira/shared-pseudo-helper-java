@@ -1,6 +1,7 @@
 package be.smals.shared.pseudo.helper.internal;
 
 import static be.smals.shared.pseudo.helper.exceptions.ThrowableWrapperException.throwWrapped;
+import static be.smals.shared.pseudo.helper.utils.FutureHelper.getWithoutCheckedException;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import be.smals.shared.pseudo.helper.Domain;
@@ -83,6 +84,16 @@ public final class MultiplePseudonymInTransitImpl extends MultiplePointImpl<Pseu
     }
 
     final var nbPseudonymsInTransit = points.size();
+
+    if (domain.isPseudoUnaware()) {
+      final var values = new ArrayList<ValueImpl>(nbPseudonymsInTransit);
+      for (int i = 0; i < nbPseudonymsInTransit; i++) {
+        final var pseudonymInTransit = (PseudonymInTransitImpl) points.get(i);
+        values.add(getWithoutCheckedException(pseudonymInTransit.identify()));
+      }
+      return completedFuture(new MultipleValueImpl(domain, values));
+    }
+
     if (nbPseudonymsInTransit == 1) {
       @SuppressWarnings("SuspiciousToArrayCall")
       final var pseudonymInTransitToIdentify = points.toArray(new PseudonymInTransit[0])[0];
@@ -127,7 +138,7 @@ public final class MultiplePseudonymInTransitImpl extends MultiplePointImpl<Pseu
 
   @Override
   void checkCollectionSize(final int size) {
-    if (size > 10) {
+    if (size > 10 && !domain.isPseudoUnaware()) {
       throw new IllegalArgumentException("The number of pseudonyms in transit in this collection must be less or equal to 10");
     }
   }

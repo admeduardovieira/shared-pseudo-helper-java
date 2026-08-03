@@ -24,6 +24,8 @@ public interface MultiplePseudonymInTransit extends MultiplePoint<PseudonymInTra
 
   /**
    * Identify (de-pseudonymise) the {@link PseudonymInTransit}s of this collection.
+   * <p>
+   * For pseudo-unaware domains, the identification is done locally (no calls to eHealth Pseudonymization service are done).
    *
    * @return a {@link CompletableFuture} of {@link MultipleValue} containing the identified {@link PseudonymInTransit}s of this collection
    */

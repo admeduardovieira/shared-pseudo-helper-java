@@ -2,6 +2,7 @@ package be.smals.shared.pseudo.helper;
 
 public interface Point {
 
+  // tag::methods[]
   /**
    * Get the domain that owns this point.
    *
@@ -22,4 +23,5 @@ public interface Point {
    * @return binary representation of the Y coordinate (as a byte array converted in a Base64 String)
    */
   String y();
+  // end::methods[]
 }

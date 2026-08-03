@@ -428,6 +428,8 @@ A Pseudonym object represents a point X and Y in a curve.
 .Methods
 [source,java,indent=0]
 ----
+include::src/main/java/be/smals/shared/pseudo/helper/Point.java[tag=methods]
+
 include::src/main/java/be/smals/shared/pseudo/helper/Pseudonym.java[tag=methods]
 ----
 

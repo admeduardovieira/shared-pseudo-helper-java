@@ -1,5 +1,7 @@
 package be.smals.shared.pseudo.helper.internal;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+
 import be.smals.shared.pseudo.helper.Domain;
 import be.smals.shared.pseudo.helper.Pseudonym;
 import be.smals.shared.pseudo.helper.PseudonymInTransit;
@@ -77,6 +79,10 @@ public final class PseudonymInTransitImpl implements PseudonymInTransit {
   @Override
   public CompletableFuture<ValueImpl> identify() {
     final var domain = pseudonym.domain;
+    if (domain.isPseudoUnaware()) {
+      final var decrypted = (PseudonymImpl) atRest(true);
+      return completedFuture(new ValueImpl(decrypted.ecPoint, domain));
+    }
     final var random = domain.createRandom();
     final var blindedPseudonym = pseudonym.multiply(random);
     final var payload = domain.createPayloadString(blindedPseudonym, transitInfo().asString());
@@ -100,6 +106,7 @@ public final class PseudonymInTransitImpl implements PseudonymInTransit {
   @SuppressWarnings("DuplicateThrows")
   @Override
   public Pseudonym atRest(final boolean validateIatAndExp) throws InvalidTransitInfoException, UnknownKidException {
+    // TODO: should we check and set `decryptedPseudonym `here ?
     final var payload = transitInfo.payload();
     if (validateIatAndExp) {
       transitInfo.validatePayload();

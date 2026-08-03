@@ -17,9 +17,9 @@ public abstract class MultiplePointImpl<T extends Point> implements MultiplePoin
   }
 
   MultiplePointImpl(final DomainImpl domain, final Collection<?> points) {
-    checkCollectionSize(points.size());
     this.domain = domain;
     this.points = new ArrayList<>(points);
+    checkCollectionSize(points.size());
   }
 
   @Override

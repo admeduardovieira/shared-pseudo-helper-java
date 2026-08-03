@@ -27,4 +27,11 @@ public class PseudonymInTransitTest {
     final var pseudonymInTransit = domain.pseudonymInTransitFactory().fromSec1AndTransitInfo(sec1AndTransitInfo);
     assertEquals(sec1AndTransitInfo, pseudonymInTransit.asShortString());
   }
+
+  //@Test
+  //void identify_() {
+  //  final var sec1AndTransitInfo = sec1CompressedBase64 + ":" + transitInfo;
+  //  final var pseudonymInTransit = domain.pseudonymInTransitFactory().fromSec1AndTransitInfo(sec1AndTransitInfo);
+  //  pseudonymInTransit.identify()
+  //}
 }

@@ -60,6 +60,16 @@ public interface Value extends Point {
   String asString();
 
   /**
+   * Pseudonymize this {@link Value}.
+   * <p>
+   * For pseudo-unaware domains, the pseudonym in transit is generated locally (no calls to eHealth Pseudonymization service are done).
+   *
+   * @return a random {@link PseudonymInTransit} for this {@link Value}.
+   */
+  CompletableFuture<? extends PseudonymInTransit> pseudonymize();
+  // end::methods[]
+
+  /**
    * Returns this {@link Value} as a {@link Pseudonym}.
    * <p>
    * Should not be used in regular usage, but it can be convenient for testing/logging purpose.
@@ -69,12 +79,4 @@ public interface Value extends Point {
    */
   @Deprecated
   Pseudonym asPseudonym();
-
-  /**
-   * Pseudonymize this {@link Value}.
-   *
-   * @return a random {@link PseudonymInTransit} for this {@link Value}.
-   */
-  CompletableFuture<? extends PseudonymInTransit> pseudonymize();
-  // end::methods[]
 }

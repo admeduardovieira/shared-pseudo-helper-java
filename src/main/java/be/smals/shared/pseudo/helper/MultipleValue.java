@@ -14,6 +14,8 @@ public interface MultipleValue extends MultiplePoint<Value> {
    * <p>
    * Please note that the {@link PseudonymInTransit}s will be returned in the order eHealth returned it
    * (it means that the first {@link PseudonymInTransit} is linked to the first {@link Value} you gave, the second one to the second one,...).
+   * <p>
+   * For pseudo-unaware domains, the pseudonyms in transit are generated locally (no calls to eHealth Pseudonymization service are done).
    *
    * @return a {@link CompletableFuture} of {@link MultiplePseudonymInTransit} that contains the pseudonymised values.
    */

@@ -31,6 +31,16 @@ public final class MultipleValueImpl extends MultiplePointImpl<Value> implements
     }
 
     final var nbValues = points.size();
+
+    if (domain.isPseudoUnaware()) {
+      final var pseudonymsInTransit = new ArrayList<PseudonymInTransitImpl>(nbValues);
+      for (int i = 0; i < nbValues; i++) {
+        final var value = (ValueImpl) points.get(i);
+        pseudonymsInTransit.add(value.inTransit());
+      }
+      return completedFuture(new MultiplePseudonymInTransitImpl(domain, pseudonymsInTransit));
+    }
+
     if (nbValues == 1) {
       @SuppressWarnings("SuspiciousToArrayCall")
       final var value = points.toArray(new Value[1])[0];
@@ -68,7 +78,7 @@ public final class MultipleValueImpl extends MultiplePointImpl<Value> implements
 
   @Override
   protected void checkCollectionSize(final int size) {
-    if (size > 10) {
+    if (size > 10 && !domain.isPseudoUnaware()) {
       throw new IllegalArgumentException("The number of values in this collection must be less or equal to 10");
     }
   }
